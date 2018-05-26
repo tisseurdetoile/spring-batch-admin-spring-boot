@@ -15,6 +15,8 @@
  */
 package de.codecentric.batch;
 
+import de.codecentric.batch.config.MainConfiguration;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -24,8 +26,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import de.codecentric.batch.config.MainConfiguration;
 
 /**
  * Main class to start the Spring Boot application. There are two ways to start it. First: Just run the main method of
@@ -37,14 +37,14 @@ import de.codecentric.batch.config.MainConfiguration;
 @Configuration
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class, DataSourceAutoConfiguration.class,
 		WebMvcAutoConfiguration.class })
-@Import(MainConfiguration.class)
+@Import({MainConfiguration.class})
 public class SpringBatchAdmin extends SpringBootServletInitializer {
 
 	/**
 	 * Run application.
 	 * 
-	 * @param args
-	 *            Parameters to pass to SpringApplication.
+	 * @param args Parameters to pass to SpringApplication.
+	 *
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBatchAdmin.class, args);

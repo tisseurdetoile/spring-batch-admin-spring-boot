@@ -15,6 +15,7 @@
  */
 package de.codecentric.batch.config;
 
+import de.codecentric.batch.job.BatchConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -24,7 +25,7 @@ import org.springframework.context.annotation.Import;
  * @author Thomas Bosch
  */
 @Configuration
-@Import({ ServletConfiguration.class, WebappConfiguration.class })
+@Import({ ServletConfiguration.class, WebappConfiguration.class, BatchConfiguration.class })
 public class MainConfiguration {
 
 }
