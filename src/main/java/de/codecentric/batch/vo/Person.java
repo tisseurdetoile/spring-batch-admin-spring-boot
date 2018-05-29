@@ -1,5 +1,10 @@
 package de.codecentric.batch.vo;
 
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "USER")
 public class Person {
 
     private String lastName;
@@ -13,14 +18,16 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
+    @XmlElement(name = "FIRSTNAME")
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @XmlElement(name = "LASTNAME")
     public String getLastName() {
         return lastName;
     }
