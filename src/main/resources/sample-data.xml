@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<USERS>
+    <USER>
+        <LASTNAME>Jill</LASTNAME>
+        <FIRSTNAME>XmlDoe</FIRSTNAME>
+    </USER>
+    <USER>
+        <LASTNAME>Joe</LASTNAME>
+        <FIRSTNAME>XmlDoe</FIRSTNAME>
+    </USER>
+    <USER>
+        <LASTNAME>Justin</LASTNAME>
+        <FIRSTNAME>XmlDoe</FIRSTNAME>
+    </USER>
+    <USER>
+        <LASTNAME>Jane</LASTNAME>
+        <FIRSTNAME>XmlDoe</FIRSTNAME>
+    </USER>
+    <USER>
+        <LASTNAME>John</LASTNAME>
+        <FIRSTNAME>XmlDoe</FIRSTNAME>
+    </USER>
+</USERS>
