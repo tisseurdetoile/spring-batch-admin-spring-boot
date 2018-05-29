@@ -11,6 +11,7 @@ import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -63,7 +64,12 @@ import org.springframework.transaction.PlatformTransactionManager;
             return new PersonItemProcessor();
         }
 
+        /**
+         * NOTA : use the @StepScope Annotation in order
+         * to use je @Value("#{jobParameters['fileName'].. in the ConsoleItemWriter
+         */
         @Bean
+        @StepScope
         public ConsoleItemWriter<Person> writer() {
             return new ConsoleItemWriter<>();
         }

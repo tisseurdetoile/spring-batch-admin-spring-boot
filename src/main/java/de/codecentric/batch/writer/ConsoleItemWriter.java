@@ -1,46 +1,35 @@
 package de.codecentric.batch.writer;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
-
 /**
- * Logs each content item by reflection with the {@link ToStringBuilder#reflectionToString(Object)}
- * method.
- *
- * @author Antoine
- *
+ * Logs each content item by using toString. method.
+ * NOTA : The calling method in the batch Configuration need tu use the @StepScope Annotation in order
+ * to use je @Value("#{jobParameters['fileName']
  * @param <T>
  */
 public class ConsoleItemWriter<T> implements ItemWriter<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConsoleItemWriter.class);
 
+    /**
+     * test of passing parameter
+     */
+    @Value("#{jobParameters['fileName']?: 'some default'}")
+    public String fileName;
+
     @Override
     public void write(List<? extends T> items) throws Exception {
-        LOG.trace("Console item writer starts");
+        LOG.info(String.format("fileName=%s", this.fileName));
+        LOG.info("Console item writer starts");
         for (T item : items) {
-            LOG.info(ToStringBuilder.reflectionToString(item));
+            LOG.info(item.toString());
         }
         LOG.info("Console item writer ends");
-    }
-
-    @BeforeStep
-    public void beforeStep(StepExecution stepExecution) {
-        ExecutionContext stepContext = stepExecution.getExecutionContext();
-        JobParameters parameters = stepExecution.getJobParameters();
-        String from = parameters.getString("from");
-        String to = parameters.getString("to");
-
-        LOG.info("from", from);
-        LOG.info("to", to);
     }
 }
