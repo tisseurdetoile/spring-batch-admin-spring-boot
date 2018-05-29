@@ -24,8 +24,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
     @Configuration
-    public class BatchConfiguration {
-        private static final Logger LOG = LoggerFactory.getLogger(BatchConfiguration.class);
+    public class BatchCsvToConsole {
+        private static final Logger LOG = LoggerFactory.getLogger(BatchCsvToConsole.class);
 
         @Autowired
         public JobBuilderFactory jobBuilderFactory;
@@ -43,8 +43,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
         // tag::readerwriterprocessor[]
         @Bean
-        public FlatFileItemReader<Person> reader() {
-            LOG.info("reader()");
+        public FlatFileItemReader<Person> csvReader() {
+            LOG.info("csvReader()");
 
             FlatFileItemReader<Person> reader = new FlatFileItemReader<Person>();
                     reader.setResource(new ClassPathResource("sample-data.csv"));
@@ -79,21 +79,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 
         // tag::jobstep[]
         @Bean
-        public Job importUserJob(Step step1, JobExecutionListener exitListener) {
-            return jobBuilderFactory.get("exampleImportUserJob")
+        public Job csvToConsoleJob(Step stepCsvConsole, JobExecutionListener exitListener) {
+            return jobBuilderFactory.get("BatchCsvToConsole")
                     .incrementer(new RunIdIncrementer())
                     //.preventRestart()
-                    .flow(step1)
+                    .flow(stepCsvConsole)
                     .end()
                     .listener(exitListener)
                     .build();
         }
 
         @Bean
-        public Step step1() {
+        public Step stepCsvConsole() {
             return stepBuilderFactory.get("step1")
                     .<Person, Person> chunk(10)
-                    .reader(reader())
+                    .reader(csvReader())
                     .processor(processor())
                     .writer(writer())
                     .build();

@@ -35,7 +35,7 @@ public class BatchXmlToConsole {
     public StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public StaxEventItemReader<Person> reader() {
+    public StaxEventItemReader<Person> xmlReader() {
         StaxEventItemReader<Person> reader = new StaxEventItemReader<Person>();
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setClassesToBeBound(Person.class);
@@ -65,21 +65,21 @@ public class BatchXmlToConsole {
 
     // tag::jobstep[]
     @Bean
-    public Job xmlToConsoleJob(Step step1, JobExecutionListener exitListener) {
+    public Job xmlToConsoleJob(Step stepXmlConsole, JobExecutionListener exitListener) {
         return jobBuilderFactory.get("xmlToConsoleJob")
                 .incrementer(new RunIdIncrementer())
                 //.preventRestart()
-                .flow(step1)
+                .flow(stepXmlConsole)
                 .end()
                 .listener(exitListener)
                 .build();
     }
 
     @Bean
-    public Step step1() {
-        return stepBuilderFactory.get("step1")
+    public Step stepXmlConsole() {
+        return stepBuilderFactory.get("stepXmlConsole")
                 .<Person, Person> chunk(10)
-                .reader(reader())
+                .reader(xmlReader())
                 .processor(processor())
                 .writer(writer())
                 .build();
