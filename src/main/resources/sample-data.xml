@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <USERS>
     <USER>
-        <LASTNAME>Jill</LASTNAME>
-        <FIRSTNAME>XmlDoe</FIRSTNAME>
+        <FIRSTNAME>Jill</FIRSTNAME>
+        <LASTNAME>XmlDoe</LASTNAME>
     </USER>
     <USER>
-        <LASTNAME>Joe</LASTNAME>
-        <FIRSTNAME>XmlDoe</FIRSTNAME>
+        <FIRSTNAME>Joe</FIRSTNAME>
+        <LASTNAME>XmlDoe</LASTNAME>
     </USER>
     <USER>
-        <LASTNAME>Justin</LASTNAME>
-        <FIRSTNAME>XmlDoe</FIRSTNAME>
+        <FIRSTNAME>Justin</FIRSTNAME>
+        <LASTNAME>XmlDoe</LASTNAME>
     </USER>
     <USER>
-        <LASTNAME>Jane</LASTNAME>
-        <FIRSTNAME>XmlDoe</FIRSTNAME>
+        <FIRSTNAME>Jane</FIRSTNAME>
+        <LASTNAME>XmlDoe</LASTNAME>
     </USER>
     <USER>
-        <LASTNAME>John</LASTNAME>
-        <FIRSTNAME>XmlDoe</FIRSTNAME>
+        <FIRSTNAME>John</FIRSTNAME>
+        <LASTNAME>XmlDoe</LASTNAME>
     </USER>
 </USERS>
