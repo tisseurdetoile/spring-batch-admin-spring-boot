@@ -5,6 +5,7 @@ import de.codecentric.batch.processor.PersonItemProcessor;
 import de.codecentric.batch.sql.CustomerRowMapper;
 import de.codecentric.batch.vo.Person;
 import de.codecentric.batch.writer.ConsoleItemWriter;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -16,12 +17,17 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 
@@ -35,7 +41,13 @@ public class BatchSqlToConsole {
     @Autowired
     public JobBuilderFactory jobBuilderFactory;
 
+    @Value("${user.schema.script}")
+    private Resource schemaScript;
 
+    @Value("${user.data.script}")
+    private Resource dataScript;
+
+    /**
     @Bean
     public DataSource userDataSource() {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
@@ -44,6 +56,56 @@ public class BatchSqlToConsole {
                 .addScript("classpath:/schema-userdata.sql")
                 .addScript("classpath:/data-userdata.sql").build();
     }
+     */
+
+    /**
+    @Bean
+    public DataSource userDataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder
+                .setType(EmbeddedDatabaseType.HSQL).build();
+    }
+     */
+
+    @Value("${user.jdbc.url}")
+    private String url;
+
+    @Value("${user.jdbc.class}")
+    private String className;
+
+    @Value("${user.jdbc.username}")
+    private String username;
+
+    @Value("${user.jdbc.password}")
+    private String password;
+
+    @Bean
+    public DataSource userDataSource() {
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setDriverClassName(className);
+        basicDataSource.setUrl(url);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+        basicDataSource.setTestWhileIdle(true);
+        basicDataSource.setDefaultAutoCommit(true);
+        return basicDataSource;
+    }
+
+    @Bean
+    public DataSourceInitializer dataSourceInitializer(final DataSource userDataSource) {
+        final DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(userDataSource);
+        initializer.setDatabasePopulator(databasePopulator());
+        return initializer;
+    }
+
+    private DatabasePopulator databasePopulator() {
+        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(schemaScript);
+        populator.addScript(dataScript);
+        return populator;
+    }
+
 
     @Bean
     public JdbcCursorItemReader<Person> jdbcCursorItemReader() {
