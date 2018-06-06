@@ -5,7 +5,6 @@ import de.codecentric.batch.processor.PersonItemProcessor;
 import de.codecentric.batch.vo.Person;
 import de.codecentric.batch.writer.ConsoleItemWriter;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -18,45 +17,59 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.PlatformTransactionManager;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+    /**
+     * BatchCsvToConsole
+     *
+     * POC :
+     * - read a csv file
+     * - uppercase the data
+     * - write it to the console.
+     */
     @Configuration
     public class BatchCsvToConsole {
-        private static final Logger LOG = LoggerFactory.getLogger(BatchCsvToConsole.class);
+        private static final Logger LOG = getLogger(BatchCsvToConsole.class);
 
+        @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
         @Autowired
         public JobBuilderFactory jobBuilderFactory;
 
-        /*
-        @Autowired
-        public JobLocator JobLocator;
-        */
-
-        @Autowired
-        PlatformTransactionManager transactionManager;
-
+        @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
         @Autowired
         public StepBuilderFactory stepBuilderFactory;
 
-        // tag::readerwriterprocessor[]
+        /**
+         * NOTA : use the @StepScope Annotation in order
+         * to use je @Value("#{jobParameters['fileName'].. in the ConsoleItemWriter
+         * dont forget to add null to calling
+         */
         @Bean
-        public FlatFileItemReader<Person> csvReader() {
+        @StepScope
+        public FlatFileItemReader<Person> csvReader(@Value("#{jobParameters['fileName']}") String fileName) {
             LOG.info("csvReader()");
+            LOG.info(String.format("fileName=%s", fileName));
+
+            if (fileName == null) {
+                fileName = "sample-data.csv";
+            }
 
             FlatFileItemReader<Person> reader = new FlatFileItemReader<Person>();
-                    reader.setResource(new ClassPathResource("sample-data.csv"));
-                    reader.setLineMapper(new DefaultLineMapper<Person>() {{
-                            setLineTokenizer(new DelimitedLineTokenizer(){{
-                                    setNames(new String[]{"firstName", "lastName"});
-                                }});
-                        setFieldSetMapper(new BeanWrapperFieldSetMapper<Person>(){{
-                                    setTargetType(Person.class);
-                                }});
-                        }});
-                    return reader;
+            reader.setResource(new ClassPathResource(fileName));;
+            reader.setLineMapper(new DefaultLineMapper<Person>() {{
+                setLineTokenizer(new DelimitedLineTokenizer(){{
+                    setNames(new String[]{"firstName", "lastName"});
+                }});
+                setFieldSetMapper(new BeanWrapperFieldSetMapper<Person>(){{
+                    setTargetType(Person.class);
+                }});
+            }});
+            return reader;
         }
 
         @Bean
@@ -77,7 +90,6 @@ import org.springframework.transaction.PlatformTransactionManager;
         @Bean
         public JobExecutionListener exitListener () { return  new ExitJobListener(); }
 
-        // tag::jobstep[]
         @Bean
         public Job csvToConsoleJob(Step stepCsvConsole, JobExecutionListener exitListener) {
             return jobBuilderFactory.get("BatchCsvToConsole")
@@ -93,10 +105,9 @@ import org.springframework.transaction.PlatformTransactionManager;
         public Step stepCsvConsole() {
             return stepBuilderFactory.get("step1")
                     .<Person, Person> chunk(10)
-                    .reader(csvReader())
+                    .reader(csvReader(null))
                     .processor(processor())
                     .writer(writer())
                     .build();
         }
-    // end::jobstep[]
     }
